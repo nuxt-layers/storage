@@ -1,0 +1,27 @@
+{
+  "name": "@nuxt-layers/storage",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Provider-agnostic object storage capability for Nuxt layers",
+  "license": "MIT",
+  "main": "./nuxt.config.ts",
+  "exports": {
+    ".": "./nuxt.config.ts",
+    "./contracts": "./shared/contracts/index.ts"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=12"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run tests/unit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "nuxt": "^4.2.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}
