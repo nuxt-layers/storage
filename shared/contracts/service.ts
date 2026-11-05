@@ -61,7 +61,7 @@ export interface StorageService {
   list(scope: StorageScope, page?: { after?: string; limit?: number }): Promise<ListPage>
   copy(scope: StorageScope, key: string, to: { visibility: Visibility }): Promise<{ key: string }>
   signUpload(scope: StorageScope, decision: Decision, input: UploadInput): Promise<SignedUpload>
-  claim(scope: StorageScope, key: string): Promise<{ key: string }>
+  claim(scope: StorageScope, key: string, to: { visibility: Visibility }): Promise<{ key: string }>
   signDownload(scope: StorageScope, decision: Decision, key: string, options?: { filename?: string }): Promise<SignedDownload>
   multipart: {
     start(scope: StorageScope, decision: Decision, input: UploadInput): Promise<{ key: string; uploadId: string }>
@@ -100,5 +100,7 @@ export interface StorageOptions {
   consumer: string
   settings: StorageSettings
   secrets: StorageSecrets
+  /** The consumer's allow-list of content types; any valid media type when absent. */
+  contentTypes?: string[]
   now?: Clock
 }

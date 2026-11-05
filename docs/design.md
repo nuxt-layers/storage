@@ -42,7 +42,7 @@ All are server-side functions; none is reachable from the browser except through
 | `list(scope, { after, limit })` | Lists keys under the scope, a page at a time |
 | `copy(scope, key, { visibility })` | Copies to a new key, for example from private to public |
 | `signUpload(scope, decision, { visibility, contentType, sha256, size })` | Returns `{ key, url, headers, expiresAt }` for one PUT into the upload bucket |
-| `claim(scope, key)` | Verifies a finished upload's size and checksum, moves it to its private or public bucket and returns the final key |
+| `claim(scope, key, { visibility })` | Verifies a finished upload's size and checksum, moves it to its private or public bucket and returns its key; the consumer states the visibility, as storage keeps no record of it |
 | `signDownload(scope, decision, key, { filename })` | Returns `{ url, expiresAt }` for one GET of a private object |
 | `multipart.start`, `multipart.signPart`, `multipart.complete`, `multipart.abort` | Large uploads, server-side or by signed per-part addresses, ending in `claim` |
 | `publicUrl(key)` | The public address of a public object |
