@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+      - run: npm install --global pnpm@12
+      - run: pnpm install
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Start a disposable MinIO with credentials made for this run
+        run: |
+          user="ci$(openssl rand -hex 8)"
+          pass="$(openssl rand -hex 24)"
+          echo "::add-mask::$pass"
+          echo "MINIO_ACCESS_KEY=$user" >> "$GITHUB_ENV"
+          echo "MINIO_SECRET_KEY=$pass" >> "$GITHUB_ENV"
+          echo "MINIO_ENDPOINT=http://127.0.0.1:9000" >> "$GITHUB_ENV"
+          docker run -d --name minio -p 9000:9000 \
+            -e MINIO_ROOT_USER="$user" -e MINIO_ROOT_PASSWORD="$pass" \
+            minio/minio:RELEASE.2025-09-07T16-13-09Z server /data
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:9000/minio/health/live && break; sleep 1; done
+      - run: pnpm test:integration

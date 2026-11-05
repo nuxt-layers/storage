@@ -8,7 +8,8 @@
   "main": "./nuxt.config.ts",
   "exports": {
     ".": "./nuxt.config.ts",
-    "./contracts": "./shared/contracts/index.ts"
+    "./contracts": "./shared/contracts/index.ts",
+    "./adapters/s3": "./server/adapters/s3.ts"
   },
   "engines": {
     "node": ">=22",
@@ -16,12 +17,17 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run tests/unit"
+    "test": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "nuxt": "^4.2.0",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1162.0",
+    "@aws-sdk/s3-request-presigner": "^3.1162.0"
   }
 }
