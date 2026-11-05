@@ -11,5 +11,5 @@
 | S3-compatible adapter, tested against SeaweedFS in CI | Done |
 | Service, filesystem adapter and fakes | Done |
 | `examples/minimal-host`, `capability.json` and `STORAGE-REGISTER.md` | Done |
-| `CONTRACT.md`, marked in development and following `master`; no tag until a release lifecycle is approved (layer standard §7) | In review |
+| `CONTRACT.md`, marked in development and following `master`; no tag until a release lifecycle is approved (layer standard §7) | Done |
 | Composing into media and Westray-Papa-Westray | Later, separate work |

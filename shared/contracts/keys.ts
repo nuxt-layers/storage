@@ -18,10 +18,34 @@ export interface KeyParts {
   objectId: string
 }
 
-export function uuidv7(now: Clock = () => new Date()): string {
+const instant = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?Z$/
+
+/** Normalises a clock returning a Date or an ISO 8601 UTC instant into one returning a valid Date. */
+export function readClock(now?: Clock): () => Date {
+  if (!now) return () => new Date()
+  return () => {
+    let value: Date | string
+    try {
+      value = now()
+    } catch {
+      throw new StorageError('validation-failed', 'now() failed')
+    }
+    let date: Date | null = null
+    if (value instanceof Date) date = value
+    else if (typeof value === 'string') {
+      const match = instant.exec(value)
+      // Date reads milliseconds only, so finer fractions are truncated, never rounded.
+      if (match) date = new Date(`${match[1]}.${(match[2] ?? '').padEnd(3, '0').slice(0, 3)}Z`)
+    }
+    if (!date || Number.isNaN(date.getTime())) throw new StorageError('validation-failed', 'now() must return a Date or an ISO 8601 UTC instant')
+    return date
+  }
+}
+
+export function uuidv7(now?: Clock): string {
   const bytes = new Uint8Array(16)
   crypto.getRandomValues(bytes)
-  let ms = now().getTime()
+  let ms = readClock(now)().getTime()
   for (let i = 5; i >= 0; i--) {
     bytes[i] = ms % 256
     ms = Math.floor(ms / 256)

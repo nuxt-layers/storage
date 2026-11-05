@@ -36,6 +36,7 @@ All are environment variables. Secrets come only from the host's secret manageme
 
 Nothing in code. The host supplies settings and secrets as above, and:
 
+- **Clock (optional):** ADR-0012's `now()`, returning a `Date` or an ISO 8601 UTC instant such as `2026-11-05T14:30:00.000Z`, so the clock layer's port fits unchanged. Defaults to the system clock; anything else fails with `validation-failed`.
 - **Scheduled work:** gives `storageTasks()` (`tasks: { name, every, run }[]`, ADR-0012) to its one scheduler: `storage.backup` and `storage.usage`, each every `24h`.
 - **Buckets:** creates the four buckets per environment, in one region, with versioning off, using administrative credentials kept out of the running site:
 
@@ -56,7 +57,7 @@ Server only. Import from `@nuxt-layers/storage/server`; types, `StorageError` an
 |---|---|
 | `storageFor(consumer, { contentTypes? })` | The `StorageService` for one consumer; `contentTypes` is its allow-list |
 | `storageTasks()` | The backup and usage tasks |
-| `createMemoryAdapter()`, `configureStorage({ settings, secrets, adapter })` | The fake and direct configuration, for consumers' tests |
+| `createMemoryAdapter()`, `configureStorage({ settings, secrets, adapter?, now? })` | The fake and direct configuration, for consumers' tests |
 
 `StorageService`, with `upload = { visibility: 'private' | 'public', contentType, sha256, size }`:
 
