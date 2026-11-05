@@ -28,7 +28,9 @@
     "@types/node": "^24.0.0",
     "nuxt": "^4.2.0",
     "typescript": "^5.9.0",
-    "vitest": "^3.2.0"
+    "vitest": "^3.2.0",
+    "vue": "^3.5.0",
+    "vue-router": "^4.5.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",
