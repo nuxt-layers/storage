@@ -3,6 +3,7 @@
 // like an S3 provider's (one object, one operation, expiry, signed headers).
 import { createHash, createHmac, randomUUID, timingSafeEqual } from 'node:crypto'
 import { StorageError } from '../../shared/contracts/errors'
+import { readClock } from '../../shared/contracts/keys'
 import type { Body, BucketRole, ListedObject, ObjectMeta, ObjectStorePort, SignedRequest } from '../../shared/contracts/port'
 import type { Clock } from '../../shared/contracts/shapes'
 
@@ -81,7 +82,7 @@ export function createLocalAdapter(input: {
   now?: Clock
 }): LocalAdapter {
   const { backend, secret } = input
-  const now = input.now ?? (() => new Date())
+  const now = readClock(input.now)
   const base = new URL(input.baseUrl)
   const basePath = base.pathname.replace(/\/$/, '')
   const data = (bucket: BucketRole) => `${bucket}/data`

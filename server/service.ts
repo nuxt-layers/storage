@@ -12,6 +12,7 @@ import {
   assertSha256,
   makeKey,
   parseKey,
+  readClock,
   scopePrefix,
   signedUrlSeconds,
 } from '../shared/contracts/keys'
@@ -57,7 +58,7 @@ export function createStorageService(input: CreateStorageInput): StorageService 
   const { consumer, settings } = input
   if (!settings) throw new StorageError('not-configured')
   assertConsumer(consumer)
-  const now = input.now ?? (() => new Date())
+  const now = readClock(input.now)
   const seconds = signedUrlSeconds(settings.signedUrlSeconds)
   const port = input.adapter ?? createAdapter(settings, input.secrets ?? {}, now)
   const warn = input.warn ?? ((message: string) => console.warn(message))

@@ -21,4 +21,8 @@ export interface Task {
   run: () => Promise<void>
 }
 
-export type Clock = () => Date
+/**
+ * ADR-0012's `now()`. Either a Date or an ISO 8601 UTC instant string, such as
+ * the clock layer's port returns (`2026-11-05T14:30:00.000Z`).
+ */
+export type Clock = () => Date | string

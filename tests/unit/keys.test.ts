@@ -6,6 +6,7 @@ import {
   assertSha256,
   makeKey,
   parseKey,
+  readClock,
   scopePrefix,
   signedUrlSeconds,
   uuidv7,
@@ -25,6 +26,27 @@ describe('uuidv7', () => {
   it('encodes the clock and the version', () => {
     const id = uuidv7(fixed)
     expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
+    expect(parseInt(id.replace(/-/g, '').slice(0, 12), 16)).toBe(fixed().getTime())
+  })
+})
+
+describe('readClock', () => {
+  it('accepts a Date or an ISO 8601 UTC instant, such as the clock layer returns', () => {
+    expect(readClock(fixed)().toISOString()).toBe('2026-11-05T00:00:00.000Z')
+    expect(readClock(() => '2026-11-05T14:30:00.000Z')().toISOString()).toBe('2026-11-05T14:30:00.000Z')
+    expect(readClock(() => '2026-11-05T14:30:00Z')().toISOString()).toBe('2026-11-05T14:30:00.000Z')
+    expect(readClock(() => '2026-11-05T14:30:00.123456789Z')().toISOString()).toBe('2026-11-05T14:30:00.123Z')
+  })
+
+  it('refuses anything else', () => {
+    expect(code(() => readClock(() => '2026-11-05T14:30:00+01:00')())).toBe('validation-failed')
+    expect(code(() => readClock(() => 'tomorrow')())).toBe('validation-failed')
+    expect(code(() => readClock(() => new Date(Number.NaN))())).toBe('validation-failed')
+    expect(code(() => readClock(() => { throw new Error('down') })())).toBe('validation-failed')
+  })
+
+  it('stamps UUIDv7 keys from a string clock', () => {
+    const id = uuidv7(() => '2026-11-05T00:00:00.000Z')
     expect(parseInt(id.replace(/-/g, '').slice(0, 12), 16)).toBe(fixed().getTime())
   })
 })

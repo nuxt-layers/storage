@@ -12,4 +12,5 @@
 | [Security §16 Data stores](https://github.com/nuxt-layers/architecture-rules/blob/fdf9e5f8f4a2163c14a50ebd37b29d49d9e640d4/docs/security.md) | `fdf9e5f` | Credentials, isolation, signed URLs, erasure and data region |
 | [Layer standard](https://github.com/nuxt-layers/architecture-rules/blob/fdf9e5f8f4a2163c14a50ebd37b29d49d9e640d4/docs/layer-standard.md) | `fdf9e5f` | Repository layout, manifest and tests |
 | [Catalogue](https://github.com/nuxt-layers/architecture-rules/blob/fdf9e5f8f4a2163c14a50ebd37b29d49d9e640d4/docs/catalogue.md) | `fdf9e5f` | Storage's place among the capabilities |
+| [clock contract](https://github.com/nuxt-layers/clock/blob/b504dee074a1c1cca9fc29db41a3e089585d78b0/CONTRACT.md) | `b504dee` | Its `now()` port returns an ISO 8601 UTC string, which storage accepts as well as a `Date` |
 | [media design](https://github.com/nuxt-layers/media/blob/1f35b23601edf3ecdd637d923627a31a5397c376/docs/design.md) | `1f35b23` | The first consumer, whose storage port this layer fills |
