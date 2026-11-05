@@ -15,3 +15,5 @@
 | 9 | Catalogue | Reverse the consolidation of `storage-service` into `media`: `storage` is listed as a Platform capability, and media uses it through its storage port. media's design is revised to drop its own storage mechanisms |
 | 10 | Clock | A separate layer and chat; storage only takes ADR-0012's `now()`. Preferred name: **`clock`** |
 | 11 | Data region (added) | Hetzner offers only Germany and Finland. Westray-Papa-Westray uses **Germany** (Falkenstein or Nuremberg) under ADR-0014, recorded in its `RESOURCES.md`. Storage refuses a tenant whose configured region its bucket cannot honour |
+
+**Later change (5 November 2026):** MinIO no longer publishes community images, so local and CI tests of the S3-compatible adapter use a disposable SeaweedFS S3 server instead (questions 1 and 6), as the owner chose.
