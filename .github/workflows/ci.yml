@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+      - name: Enable pnpm through Corepack (no longer bundled with Node.js)
+        run: |
+          npm install --global corepack@0.36.0
+          corepack enable pnpm
+      - run: pnpm install
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Start a disposable SeaweedFS S3 server with credentials made for this run
+        run: |
+          key="ci$(openssl rand -hex 8)"
+          secret="$(openssl rand -hex 24)"
+          echo "::add-mask::$secret"
+          echo "S3_TEST_ACCESS_KEY=$key" >> "$GITHUB_ENV"
+          echo "S3_TEST_SECRET_KEY=$secret" >> "$GITHUB_ENV"
+          echo "S3_TEST_ENDPOINT=http://127.0.0.1:8333" >> "$GITHUB_ENV"
+          printf '{"identities":[{"name":"ci","credentials":[{"accessKey":"%s","secretKey":"%s"}],"actions":["Admin","Read","Write","List","Tagging"]}]}' "$key" "$secret" > "$RUNNER_TEMP/s3.json"
+          docker run -d --name seaweedfs -p 8333:8333 -v "$RUNNER_TEMP/s3.json:/etc/seaweedfs/s3.json:ro" \
+            chrislusf/seaweedfs:4.52 server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+          for i in $(seq 1 60); do [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8333/)" != "000" ] && break; sleep 1; done
+      - run: pnpm test:integration
