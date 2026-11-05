@@ -9,8 +9,11 @@
 # Checks the branch you are on, or BRANCH if set. On Windows, run it from Git
 # Bash (bash scripts/local-check.sh) with Docker Desktop running.
 set -euo pipefail
-# Git Bash would otherwise rewrite container paths such as /data into Windows paths.
-export MSYS_NO_PATHCONV=1
+
+# Git Bash rewrites arguments that look like paths (such as /data) into Windows
+# paths. That must be off for Docker's container paths, but on for everything
+# else: Node.js and pnpm's shims need their paths rewritten to run at all.
+docker_() { MSYS_NO_PATHCONV=1 docker "$@"; }
 
 image="chrislusf/seaweedfs:4.52"
 container="storage-check-s3"
@@ -46,18 +49,18 @@ secret="$(openssl rand -hex 24)"
 mkdir -p .local-check
 config=".local-check/s3.json"
 cleanup() {
-  docker rm -f "$container" >/dev/null 2>&1 || true
+  docker_ rm -f "$container" >/dev/null 2>&1 || true
   rm -rf .local-check
 }
 trap cleanup EXIT
 printf '{"identities":[{"name":"local","credentials":[{"accessKey":"%s","secretKey":"%s"}],"actions":["Admin","Read","Write","List","Tagging"]}]}' \
   "$key" "$secret" > "$config"
-docker rm -f "$container" >/dev/null 2>&1 || true
+docker_ rm -f "$container" >/dev/null 2>&1 || true
 # Copied in rather than mounted, so the same commands work on Linux, macOS and Windows.
-docker create --name "$container" -p "$port:8333" \
+docker_ create --name "$container" -p "$port:8333" \
   "$image" server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json >/dev/null
-docker cp "$config" "$container:/etc/seaweedfs/s3.json"
-docker start "$container" >/dev/null
+docker_ cp "$config" "$container:/etc/seaweedfs/s3.json"
+docker_ start "$container" >/dev/null
 for _ in $(seq 1 60); do
   [ "$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$port/")" != "000" ] && break
   sleep 1
