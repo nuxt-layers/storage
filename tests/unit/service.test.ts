@@ -38,7 +38,8 @@ async function code(promise: Promise<unknown>): Promise<string> {
 }
 
 async function send(adapter: LocalAdapter, signed: { url: string; method: string; headers: Record<string, string> }, body?: Uint8Array) {
-  return adapter.handle(new Request(signed.url, { method: signed.method, headers: signed.headers, body }))
+  // A copy, because Request takes only ArrayBuffer-backed bytes.
+  return adapter.handle(new Request(signed.url, { method: signed.method, headers: signed.headers, body: body ? new Uint8Array(body) : undefined }))
 }
 
 describe('isolation and checks', () => {
