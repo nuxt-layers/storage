@@ -83,7 +83,7 @@ Each bucket set states its region. The consumer passes the tenant's data region 
 | Host passes | Shape |
 |---|---|
 | Provider settings | `provider` (`s3`, `filesystem` or `memory`), endpoint, region, bucket names, `publicBaseUrl`, limits |
-| Secrets | Access key and secret from the host's secret management through runtime configuration, never committed or public; rotatable without a release. Administrative credentials for setting lifecycle rules are separate and used only by a set-up command |
+| Secrets | Access key and secret from the host's secret management through runtime configuration, never committed or public; rotatable without a release. Administrative credentials for creating buckets and setting their rules (listed in `CONTRACT.md`) are separate and never reach the running site |
 | Caller and access | `resolveCaller` and a `decide` result, in ADR-0012's shapes |
 | Scheduled work | Storage returns `tasks` (backup, usage) for the host's scheduler |
 | Clock | `now()`, optional |
