@@ -8,7 +8,7 @@
 | Design, and the catalogue and media design changes | Done |
 | Verify Hetzner Object Storage against the design: presigned URLs, multipart, lifecycle rules, bucket policies and key scope, at-rest encryption; record the revision in `RESOURCES.md` | Next |
 | Contract and port shapes | Done |
-| S3-compatible adapter, tested against MinIO in CI | In review |
+| S3-compatible adapter, tested against SeaweedFS in CI | In review |
 | Filesystem adapter and fakes | Next |
 | `examples/minimal-host`, `capability.json` and `STORAGE-REGISTER.md` | Next |
 | `CONTRACT.md` and a tagged release | Next |

@@ -1,6 +1,6 @@
 # Storage: Design
 
-> **In short:** storage saves and retrieves files in an object store behind one provider-agnostic port. It keeps only bytes and object metadata, never records: the consumer, such as media, keeps each item's record and decides who may do what. Keys always carry the tenant and owning group, signed addresses last at most 15 minutes, and every object has a content type and a SHA-256 checksum. Version 1 ships an S3-compatible adapter (Hetzner first, MinIO in tests), a filesystem adapter for development and an in-memory fake for tests. Agreed in the [discussion](discussion.md); nothing is built yet. External documents named here are listed in [Resources](../RESOURCES.md).
+> **In short:** storage saves and retrieves files in an object store behind one provider-agnostic port. It keeps only bytes and object metadata, never records: the consumer, such as media, keeps each item's record and decides who may do what. Keys always carry the tenant and owning group, signed addresses last at most 15 minutes, and every object has a content type and a SHA-256 checksum. Version 1 ships an S3-compatible adapter (Hetzner first, SeaweedFS in tests), a filesystem adapter for development and an in-memory fake for tests. Agreed in the [discussion](discussion.md); nothing is built yet. External documents named here are listed in [Resources](../RESOURCES.md).
 
 ## What it is for
 
@@ -108,7 +108,7 @@ The filesystem adapter signs local addresses with a host-supplied secret and ser
 
 ## Where the files go for Westray-Papa-Westray
 
-Hetzner Object Storage, through the S3-compatible adapter, in Germany (Falkenstein or Nuremberg) under ADR-0014. The site records the provider, region, assurance evidence and date checked in its own `RESOURCES.md`. Tests and CI use MinIO, never a shared hosted bucket.
+Hetzner Object Storage, through the S3-compatible adapter, in Germany (Falkenstein or Nuremberg) under ADR-0014. The site records the provider, region, assurance evidence and date checked in its own `RESOURCES.md`. Tests and CI use a disposable SeaweedFS S3 server, never a shared hosted bucket. MinIO was the first choice, but its community images are no longer published.
 
 ## Not in version 1
 

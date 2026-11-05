@@ -1,4 +1,4 @@
-// Runs against a disposable MinIO only (CI starts one); never a hosted bucket.
+// Runs against a disposable S3-compatible server only (CI starts SeaweedFS); never a hosted bucket.
 import { createHash } from 'node:crypto'
 import { CreateBucketCommand, S3Client } from '@aws-sdk/client-s3'
 import { beforeAll, describe, expect, it } from 'vitest'
@@ -6,11 +6,11 @@ import { createS3Adapter } from '../../server/adapters/s3'
 import { makeKey } from '../../shared/contracts'
 import type { StorageSettings } from '../../shared/contracts'
 
-const endpoint = process.env.MINIO_ENDPOINT
-const accessKeyId = process.env.MINIO_ACCESS_KEY
-const secretAccessKey = process.env.MINIO_SECRET_KEY
+const endpoint = process.env.S3_TEST_ENDPOINT
+const accessKeyId = process.env.S3_TEST_ACCESS_KEY
+const secretAccessKey = process.env.S3_TEST_SECRET_KEY
 if (!endpoint || !accessKeyId || !secretAccessKey) {
-  throw new Error('MINIO_ENDPOINT, MINIO_ACCESS_KEY and MINIO_SECRET_KEY are required for integration tests')
+  throw new Error('S3_TEST_ENDPOINT, S3_TEST_ACCESS_KEY and S3_TEST_SECRET_KEY are required for integration tests')
 }
 
 const run = Date.now().toString(36)
@@ -36,7 +36,7 @@ beforeAll(async () => {
   for (const bucket of Object.values(settings.buckets)) await admin.send(new CreateBucketCommand({ Bucket: bucket }))
 })
 
-describe('S3 adapter against MinIO', () => {
+describe('S3 adapter against a disposable S3 server', () => {
   it('puts, heads, gets and removes', async () => {
     const key = newKey()
     await adapter.put('private', key, bytes, meta)

@@ -1,4 +1,4 @@
-// S3-compatible adapter (Hetzner Object Storage first; MinIO in tests).
+// S3-compatible adapter (Hetzner Object Storage first; SeaweedFS in tests).
 // The AWS SDK stays inside this file: no SDK type crosses the port.
 import { Readable } from 'node:stream'
 import {
