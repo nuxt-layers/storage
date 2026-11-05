@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@12.16.1",
   "description": "Provider-agnostic object storage capability for Nuxt layers",
   "license": "MIT",
   "main": "./nuxt.config.ts",
@@ -12,8 +13,7 @@
     "./adapters/s3": "./server/adapters/s3.ts"
   },
   "engines": {
-    "node": ">=22",
-    "pnpm": ">=12"
+    "node": ">=22"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
