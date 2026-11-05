@@ -61,8 +61,9 @@ export function createS3Adapter(settings: StorageSettings, secrets: StorageSecre
     credentials: { accessKeyId: secrets.accessKeyId, secretAccessKey: secrets.secretAccessKey },
   })
 
-  const sign = async (command: Parameters<typeof getSignedUrl>[1], expiresIn: number, method: SignedRequest['method'], headers: Record<string, string>, signable?: Set<string>): Promise<SignedRequest> => ({
-    url: await call(() => getSignedUrl(client, command, { expiresIn, signableHeaders: signable })),
+  // Each caller passes getSignedUrl with its concrete command, so the SDK's generics infer.
+  const sign = async (signed: () => Promise<string>, method: SignedRequest['method'], headers: Record<string, string>): Promise<SignedRequest> => ({
+    url: await call(signed),
     method,
     headers,
   })
@@ -148,7 +149,8 @@ export function createS3Adapter(settings: StorageSettings, secrets: StorageSecre
         ContentLength: input.size,
         Metadata: { sha256: input.sha256 },
       })
-      return sign(command, input.expiresInSeconds, 'PUT', { 'content-type': input.contentType }, new Set(['content-type', 'content-length']))
+      const signableHeaders = new Set(['content-type', 'content-length'])
+      return sign(() => getSignedUrl(client, command, { expiresIn: input.expiresInSeconds, signableHeaders }), 'PUT', { 'content-type': input.contentType })
     },
 
     signGet(bucket, key, input) {
@@ -157,7 +159,7 @@ export function createS3Adapter(settings: StorageSettings, secrets: StorageSecre
         Key: key,
         ResponseContentDisposition: input.filename ? `attachment; filename*=UTF-8''${encodeURIComponent(input.filename)}` : undefined,
       })
-      return sign(command, input.expiresInSeconds, 'GET', {})
+      return sign(() => getSignedUrl(client, command, { expiresIn: input.expiresInSeconds }), 'GET', {})
     },
 
     async multipartStart(bucket, key, meta) {
@@ -175,7 +177,7 @@ export function createS3Adapter(settings: StorageSettings, secrets: StorageSecre
 
     multipartSignPart(bucket, key, input) {
       const command = new UploadPartCommand({ Bucket: name(bucket), Key: key, UploadId: input.uploadId, PartNumber: input.partNumber })
-      return sign(command, input.expiresInSeconds, 'PUT', {})
+      return sign(() => getSignedUrl(client, command, { expiresIn: input.expiresInSeconds }), 'PUT', {})
     },
 
     async multipartComplete(bucket, key, input) {
