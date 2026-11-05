@@ -6,4 +6,6 @@
 - [Discussion](docs/discussion.md): the questions agreed with the owner.
 - [Plan](PLAN.md), [Resources](RESOURCES.md) and [Changelog](CHANGELOG.md).
 
-Nothing is built yet. Hosts will compose it from `CONTRACT.md` alone.
+Hosts will compose it from `CONTRACT.md` alone, once written.
+
+To run every check CI runs, on your own machine (Node.js, Docker and `openssl` needed): `scripts/local-check.sh`. Add `--commit-lockfile` to commit and push a changed lockfile.

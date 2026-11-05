@@ -10,7 +10,8 @@
   "exports": {
     ".": "./nuxt.config.ts",
     "./contracts": "./shared/contracts/index.ts",
-    "./adapters/s3": "./server/adapters/s3.ts"
+    "./adapters/s3": "./server/adapters/s3.ts",
+    "./server": "./server/index.ts"
   },
   "engines": {
     "node": ">=22"
@@ -27,7 +28,7 @@
     "vitest": "^3.2.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1162.0",
-    "@aws-sdk/s3-request-presigner": "^3.1162.0"
+    "@aws-sdk/client-s3": "^3.1161.0",
+    "@aws-sdk/s3-request-presigner": "^3.1161.0"
   }
 }
