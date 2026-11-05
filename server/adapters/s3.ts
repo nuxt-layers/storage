@@ -59,6 +59,11 @@ export function createS3Adapter(settings: StorageSettings, secrets: StorageSecre
     region: s3.region,
     forcePathStyle: s3.forcePathStyle ?? false,
     credentials: { accessKeyId: secrets.accessKeyId, secretAccessKey: secrets.secretAccessKey },
+    // The SDK's default CRC32 checksums are not supported by every S3-compatible
+    // provider, and in signed addresses they carry the checksum of an empty body,
+    // so every upload through one is refused. Storage verifies SHA-256 itself.
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
   })
 
   // Each caller passes getSignedUrl with its concrete command, so the SDK's generics infer.
@@ -149,8 +154,14 @@ export function createS3Adapter(settings: StorageSettings, secrets: StorageSecre
         ContentLength: input.size,
         Metadata: { sha256: input.sha256 },
       })
-      const signableHeaders = new Set(['content-type', 'content-length'])
-      return sign(() => getSignedUrl(client, command, { expiresIn: input.expiresInSeconds, signableHeaders }), 'PUT', { 'content-type': input.contentType })
+      // The checksum travels as a signed header, not a query parameter, so every provider stores it.
+      const signableHeaders = new Set(['content-type', 'content-length', 'x-amz-meta-sha256'])
+      const unhoistableHeaders = new Set(['x-amz-meta-sha256'])
+      return sign(
+        () => getSignedUrl(client, command, { expiresIn: input.expiresInSeconds, signableHeaders, unhoistableHeaders }),
+        'PUT',
+        { 'content-type': input.contentType, 'x-amz-meta-sha256': input.sha256 },
+      )
     },
 
     signGet(bucket, key, input) {

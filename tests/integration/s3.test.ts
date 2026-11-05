@@ -34,7 +34,22 @@ async function text(stream: ReadableStream<Uint8Array>) {
 beforeAll(async () => {
   const admin = new S3Client({ endpoint, region: 'us-east-1', forcePathStyle: true, credentials: { accessKeyId, secretAccessKey } })
   for (const bucket of Object.values(settings.buckets)) await admin.send(new CreateBucketCommand({ Bucket: bucket }))
-})
+  // A fresh server allocates storage on each bucket's first write, which can take
+  // several seconds; write once to every bucket, retrying, before the tests run.
+  for (const role of ['uploads', 'private', 'public', 'backup'] as const) {
+    const key = newKey()
+    for (let attempt = 1; ; attempt++) {
+      try {
+        await adapter.put(role, key, bytes, meta)
+        await adapter.remove(role, key)
+        break
+      } catch (error) {
+        if (attempt >= 30) throw error
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+      }
+    }
+  }
+}, 120_000)
 
 describe('S3 adapter against a disposable S3 server', () => {
   it('puts, heads, gets and removes', async () => {
@@ -96,6 +111,7 @@ describe('S3 adapter against a disposable S3 server', () => {
     for (const [index, chunk] of [part, last].entries()) {
       const signed = await adapter.multipartSignPart('uploads', key, { uploadId, partNumber: index + 1, expiresInSeconds: 60 })
       const res = await fetch(signed.url, { method: 'PUT', body: chunk })
+      expect(res.status).toBe(200)
       parts.push({ partNumber: index + 1, etag: res.headers.get('etag')! })
     }
     await adapter.multipartComplete('uploads', key, { uploadId, parts })
