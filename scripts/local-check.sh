@@ -69,6 +69,11 @@ done
 echo "==> Integration tests"
 S3_TEST_ENDPOINT="http://127.0.0.1:$port" S3_TEST_ACCESS_KEY="$key" S3_TEST_SECRET_KEY="$secret" pnpm test:integration
 
+echo "==> Composition budget, example host build and smoke test"
+pnpm check:budget
+pnpm build:example
+S3_TEST_ENDPOINT="http://127.0.0.1:$port" S3_TEST_ACCESS_KEY="$key" S3_TEST_SECRET_KEY="$secret" pnpm test:smoke
+
 if [ "${1:-}" = "--commit-lockfile" ] && [ -n "$(git status --porcelain -- pnpm-lock.yaml pnpm-workspace.yaml)" ]; then
   if [ "$branch" = "master" ]; then
     echo "!! master is protected: commit the lockfile on a branch and open a pull request." >&2
