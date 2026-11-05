@@ -19,13 +19,18 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run tests/unit",
-    "test:integration": "vitest run tests/integration --testTimeout=30000"
+    "test:integration": "vitest run tests/integration --testTimeout=30000",
+    "check:budget": "node scripts/check-budget.mjs",
+    "build:example": "nuxt build examples/minimal-host",
+    "test:smoke": "vitest run tests/smoke --testTimeout=60000"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "nuxt": "^4.2.0",
     "typescript": "^5.9.0",
-    "vitest": "^3.2.0"
+    "vitest": "^3.2.0",
+    "vue": "^3.5.0",
+    "vue-router": "^4.5.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1161.0",

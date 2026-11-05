@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1",
+  "name": "@nuxt-layers/storage",
+  "version": "0.0.0",
+  "classification": "platform",
+  "provides": [{ "capability": "StorageService", "contractVersion": "1" }],
+  "requires": []
+}

@@ -14,5 +14,10 @@
     "shared",
     "server",
     "tests"
+  ],
+  "exclude": [
+    "server/plugins",
+    "server/routes",
+    "examples"
   ]
 }
