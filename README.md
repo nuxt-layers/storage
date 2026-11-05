@@ -8,4 +8,4 @@
 
 Hosts will compose it from `CONTRACT.md` alone, once written.
 
-To run every check CI runs, on your own machine (Node.js, Docker and `openssl` needed): `scripts/local-check.sh`. Add `--commit-lockfile` to commit and push a changed lockfile.
+To run every check CI runs, on your own machine (Node.js, Docker and `openssl` needed): `scripts/local-check.sh` (on Windows, from Git Bash with Docker Desktop running). It checks the branch you are on. Add `--commit-lockfile` to commit and push a changed lockfile.
